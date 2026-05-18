@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Staff {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  email             String              @unique
+  password          String
+  role              StaffRole
+  status            StaffStatus         @default(ACTIVE)
+  createdAt         DateTime            @default(now())
+  deletedAt         DateTime?
+  AuditLog          AuditLog[]
+  CookingExperiment CookingExperiment[]
+  ReviewAnswer      ReviewAnswer[]
+  SensoryEvaluation SensoryEvaluation[]
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  entity      String
+  entityId    Int?
+  entityLabel String?
+  description String
+  userId      Int?
+  createdAt   DateTime @default(now())
+  Staff       Staff?   @relation(fields: [userId], references: [id])
+}
+
+model CookingExperiment {
+  id                  Int                 @id @default(autoincrement())
+
+  recipeName          String
+  recipeVersion       String
+  description         String?
+
+  recipeId            Int?
+
+  experimentDate      DateTime?
+  experimentTime      String?
+
+  temperature         Float?
+  duration            Int?
+
+  expectedTexture     String?
+  achievedTexture     String?
+
+  expectedOutput      Float?
+  actualOutput        Float?
+
+  remarks             String?
+
+  status              ExperimentStatus   @default(DRAFT)
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  chefId              Int?
+
+  chef                Staff?             @relation(fields: [chefId], references: [id])
+  recipe              Recipe?            @relation(fields: [recipeId], references: [id])
+
+  images              ExperimentImage[]
+  ingredients         Ingredient[]
+  reviewAnswers       ReviewAnswer[]
+  sensoryEvaluations  SensoryEvaluation[]
+}
+
+model ExperimentImage {
+  id                Int               @id @default(autoincrement())
+  imageUrl          String
+  experimentId      Int
+  CookingExperiment CookingExperiment @relation(fields: [experimentId], references: [id])
+}
+
+model Ingredient {
+  id                Int               @id @default(autoincrement())
+  name              String
+  quantity          Float
+  unit              String
+  experimentId      Int
+  CookingExperiment CookingExperiment @relation(fields: [experimentId], references: [id])
+}
+
+model IngredientCatalog {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  unit      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recipe {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  CookingExperiment CookingExperiment[]
+}
+
+model RecipeReportCache {
+  id            Int      @id @default(autoincrement())
+  recipeName    String
+  dataSignature String
+  reportUrl     String
+  publicId      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@unique([recipeName, dataSignature])
+}
+
+model ReviewAnswer {
+  id                Int               @id @default(autoincrement())
+  answerValue       Json
+  questionId        Int
+  experimentId      Int
+  reviewerId        Int?
+  createdAt         DateTime          @default(now())
+  CookingExperiment CookingExperiment @relation(fields: [experimentId], references: [id])
+  ReviewQuestion    ReviewQuestion    @relation(fields: [questionId], references: [id])
+  Staff             Staff?            @relation(fields: [reviewerId], references: [id])
+}
+
+model ReviewQuestion {
+  id           Int            @id @default(autoincrement())
+  question     String
+  type         String
+  config       Json?
+  createdAt    DateTime       @default(now())
+  deletedAt    DateTime?
+  ReviewAnswer ReviewAnswer[]
+}
+
+model SensoryEvaluation {
+  id                  Int               @id @default(autoincrement())
+  cookingExperimentId Int
+  reviewerId          Int?
+  tasteConsistency    Float
+  aromaticVolatility  Float
+  sodiumProjection    Float
+  chromaticAppeal     Float
+  structuralIntegrity Float
+  scovillePerception  Float
+  lipidSaturation     Float
+  cellularFreshness   Float
+  palatePersistence   Float
+  finalExpertNote     String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime
+  CookingExperiment   CookingExperiment @relation(fields: [cookingExperimentId], references: [id])
+  Staff               Staff?            @relation(fields: [reviewerId], references: [id])
+}
+
+enum StaffRole {
+  MANAGER
+  CHEF
+  REVIEWER
+  CRA
+}
+
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ExperimentStatus {
+  DRAFT
+  SUBMITTED
+}
