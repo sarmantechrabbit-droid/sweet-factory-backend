@@ -1,7 +1,7 @@
 const { prisma } = require("../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-// const { createAuditLog } = require("../utils/auditLogger.js");
+const { createAuditLog } = require("../utils/auditLogger.js");
 
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*!_])[A-Za-z\d@#$%&*!_]{8,}$/;
@@ -62,14 +62,14 @@ const createStaff = async (data) => {
       },
     });
 
-    // await createAuditLog(prisma, {
-    //   action: "CREATED",
-    //   entity: "Staff",
-    //   entityId: user.id,
-    //   entityLabel: user.name,
-    //   description: `Staff member ${user.name} reactivated with role ${user.role}`,
-    //   userId: null,
-    // });
+    await createAuditLog(prisma, {
+      action: "CREATED",
+      entity: "Staff",
+      entityId: user.id,
+      entityLabel: user.name,
+      description: `Staff member ${user.name} reactivated with role ${user.role}`,
+      userId: null,
+    });
 
     return {
       id: user.id,
@@ -91,14 +91,14 @@ const createStaff = async (data) => {
     },
   });
 
-  // await createAuditLog(prisma, {
-  //   action: "CREATED",
-  //   entity: "Staff",
-  //   entityId: user.id,
-  //   entityLabel: user.name,
-  //   description: `New staff member ${user.name} added with role ${user.role}`,
-  //   userId: null,
-  // });
+  await createAuditLog(prisma, {
+    action: "CREATED",
+    entity: "Staff",
+    entityId: user.id,
+    entityLabel: user.name,
+    description: `New staff member ${user.name} added with role ${user.role}`,
+    userId: null,
+  });
 
   return {
     id: user.id,
@@ -241,16 +241,16 @@ const updateStaff = async (id, data) => {
     data: updateData,
   });
 
-  // await createAuditLog(prisma, {
-  //   action: "UPDATED",
-  //   entity: "Staff",
-  //   entityId: user.id,
-  //   entityLabel: user.name,
-  //   description: `Staff member ${user.name} updated (${Object.keys(updateData)
-  //     .filter((k) => k !== "password")
-  //     .join(", ")})`,
-  //   userId: null,
-  // });
+  await createAuditLog(prisma, {
+    action: "UPDATED",
+    entity: "Staff",
+    entityId: user.id,
+    entityLabel: user.name,
+    description: `Staff member ${user.name} updated (${Object.keys(updateData)
+      .filter((k) => k !== "password")
+      .join(", ")})`,
+    userId: null,
+  });
 
   return {
     id: user.id,
@@ -267,14 +267,14 @@ const deleteStaff = async (id) => {
     data: { deletedAt: new Date(), status: "INACTIVE" },
   });
 
-  // await createAuditLog(prisma, {
-  //   action: "DELETED",
-  //   entity: "Staff",
-  //   entityId: id,
-  //   entityLabel: user.name,
-  //   description: `Staff member ${user.name} (${user.role}) removed from the system (Soft Deleted)`,
-  //   userId: null,
-  // });
+  await createAuditLog(prisma, {
+    action: "DELETED",
+    entity: "Staff",
+    entityId: id,
+    entityLabel: user.name,
+    description: `Staff member ${user.name} (${user.role}) removed from the system (Soft Deleted)`,
+    userId: null,
+  });
 
   return { id: user.id, message: "Staff member deleted successfully" };
 };

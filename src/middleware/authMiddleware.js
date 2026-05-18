@@ -1,43 +1,4 @@
-// const jwt = require("jsonwebtoken");
-// const { prisma } = require("../config/db");
 
-// const verifyToken = async (req, res, next) => {
-//   try {
-//     const header = req.headers.authorization;
-
-//     if (!header) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "No token provided",
-//       });
-//     }
-
-//     const token = header.split(" ")[1];
-
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-//     // Check if user is still active in database
-//     const user = await prisma.staff.findUnique({
-//       where: { id: decoded.id },
-//       select: { status: true },
-//     });
-
-//     if (!user || user.status !== "ACTIVE") {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Account is inactive or does not exist.",
-//       });
-//     }
-
-//     req.user = decoded;
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({
-//       success: false,
-//       message: "Invalid or expired token",
-//     });
-//   }
-// };
 
 // module.exports = verifyToken;
 

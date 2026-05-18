@@ -3,6 +3,12 @@ dotenv.config();
 const express = require("express");
 const authRoutes = require("./routes/authRoutes.js");
 const experimentRoutes = require("./routes/experimentRoutes.js");
+const questionRoutes = require("./routes/questionRoutes.js");
+const auditRoutes = require("./routes/auditRoutes.js");
+const sensoryRoutes = require("./routes/sensoryRoutes.js");
+
+
+
 
 const cors = require("cors");
 
@@ -19,6 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/experiments", experimentRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/audit", auditRoutes);
+app.use("/api/sensory", sensoryRoutes);
+
+
+
 
 // Global error handler — must be AFTER all routes
 app.use((err, req, res, next) => {

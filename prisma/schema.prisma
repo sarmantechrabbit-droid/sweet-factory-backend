@@ -31,7 +31,7 @@ model AuditLog {
   description String
   userId      Int?
   createdAt   DateTime @default(now())
-  Staff       Staff?   @relation(fields: [userId], references: [id])
+  Staff       Staff?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model CookingExperiment {
@@ -140,23 +140,28 @@ model ReviewQuestion {
 }
 
 model SensoryEvaluation {
-  id                  Int               @id @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
+
   cookingExperimentId Int
   reviewerId          Int?
-  tasteConsistency    Float
-  aromaticVolatility  Float
-  sodiumProjection    Float
-  chromaticAppeal     Float
-  structuralIntegrity Float
-  scovillePerception  Float
-  lipidSaturation     Float
-  cellularFreshness   Float
-  palatePersistence   Float
-  finalExpertNote     String?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime
+
+  // ✅ Your API fields
+  texturescore        Float
+  tastescore          Float
+  colorscore          Float
+  finalqualityscore   Float
+
+  reviewnotes         String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
   CookingExperiment   CookingExperiment @relation(fields: [cookingExperimentId], references: [id])
   Staff               Staff?            @relation(fields: [reviewerId], references: [id])
+
+  @@index([cookingExperimentId])
+  @@index([reviewerId])
 }
 
 enum StaffRole {
